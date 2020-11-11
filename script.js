@@ -1,19 +1,21 @@
 var stage = new createjs.Stage('myCanvas');
 
+var net = new PetriNet();
+
 var lineDraw_mode = false;
 var token_mode = false;
 var firstPoint = null;
 
 let log = function (msg) {
-    $("#logger").append("<br>" + msg)
-};
+    $("#logger").append("<br>" + msg);
+}
 
 let toolbar_clone = function (evt) {
     let clone;
-    if(evt.target.def.type == "place"){
-        clone = new Place(evt.target.def.x,evt.target.def.y);
-    } else{
-        clone = new Transition(evt.target.def.x,evt.target.def.y);
+    if (evt.target.def.get_type() === "place") {
+        clone = new Place(evt.target.def.get_x(), evt.target.def.get_y(), net);
+    } else {
+        clone = new Transition(evt.target.def.get_x(), evt.target.def.get_y(), net);
     }
     clone.make();
 
@@ -27,9 +29,7 @@ let toolbar_clone = function (evt) {
 }
 
 let toolbar_clone_interact = function (evt) {
-    if (lineDraw_mode || token_mode) {
-        return;
-    } else {
+    if (!lineDraw_mode && !token_mode) {
         evt.currentTarget.def.set_coordinates(evt.stageX + evt.currentTarget.offset.x, evt.stageY + evt.currentTarget.offset.y)
         stage.update();
     }
@@ -65,7 +65,7 @@ let cloned_element_interact = function (evt) {
                 .endFill();
             stage.addChild(connection);
 
-            Petri.add_connection(firstPoint.def, evt.target.def);
+            PetriObject.add_connection(firstPoint.def, evt.target.def);
 
             firstPoint = null;
             stage.update();
@@ -74,11 +74,16 @@ let cloned_element_interact = function (evt) {
 };
 
 $(document).ready(function () {
+    var btn = $("#run");
+    btn.on('click', function () {
+        step(net);
+    });
+
     // Define toolbars
-    let place_toolbar = new Place(30,30, false);
+    let place_toolbar = new Place(30, 30, net, false);
     place_toolbar.make()
 
-    let transition_toolbar = new Transition(25,70, false);
+    let transition_toolbar = new Transition(25, 70, net, false);
     transition_toolbar.make()
 
     let connection_toolbar = new createjs.Shape();

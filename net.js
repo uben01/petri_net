@@ -1,19 +1,41 @@
-class Petri {
-    x;
-    y;
-    pre = [];
-    post = [];
-    movable = true;
-    graphics;
-    type;
+class PetriNet {
+    _all_elements = []
 
-    static all_elements = []
+    get_all_elements() {
+        return this._all_elements;
+    }
 
-    constructor(x, y, add) {
-        this.x = x;
-        this.y = y;
+    get_state_model() {
+        let states = []
+        for (let i = 0; i < this._all_elements.length; i++) {
+            if (this._all_elements[i].get_type() === "place") {
+                states.push(this._all_elements[i].get_tokens());
+            }
+        }
+        return states;
+    }
 
-        if (add) Petri.all_elements.push(this)
+    add_element(element) {
+        this._all_elements.push(element);
+    }
+}
+
+class PetriObject {
+    _x;
+    _y;
+    _pre = [];
+    _post = [];
+    _movable = true;
+    _graphics;
+    _type;
+    _parent;
+
+    constructor(x, y, parent, add) {
+        this._x = x;
+        this._y = y;
+        this._parent = parent;
+
+        if (add) this._parent.add_element(this);
     }
 
     make() {
@@ -21,77 +43,97 @@ class Petri {
     }
 
     set_fixed() {
-        this.movable = false;
-    }
-
-    static add_connection(pre, post) {
-        pre.post.push(post)
-        post.pre.push(pre)
+        this._movable = false;
     }
 
     get_graphics() {
-        return this.graphics;
+        return this._graphics;
     }
 
     set_coordinates(x, y) {
-        if (this.movable) {
-            this.x = x;
-            this.y = y;
-            this.graphics.x = x;
-            this.graphics.y = y;
+        if (this._movable) {
+            this._x = x;
+            this._y = y;
+            this._graphics.x = x;
+            this._graphics.y = y;
         }
     }
 
     get_type() {
-        return this.type;
+        return this._type;
+    }
+
+    get_pre() {
+        return this._pre;
+    }
+
+    get_post() {
+        return this._post;
+    }
+
+    get_x() {
+        return this._x;
+    }
+
+    get_y() {
+        return this._y;
+    }
+
+    static add_connection(pre, post) {
+        pre._post.push(post)
+        post._pre.push(pre)
     }
 }
 
-class Place extends Petri {
-    r = 20;
-    tokens = 0;
+class Place extends PetriObject {
+    _r = 20;
+    _tokens = 0;
 
-    constructor(x, y, add = true) {
-        super(x, y, add);
-        this.type = "place"
+    constructor(x, y, net, add = true) {
+        super(x, y, net, add);
+        this._type = "place"
     }
 
     make() {
         let place = new createjs.Shape();
-        place.graphics.setStrokeStyle(2).beginStroke('black').drawCircle(this.x, this.y, this.r);
+        place.graphics.setStrokeStyle(2).beginStroke('black').drawCircle(this._x, this._y, this._r);
         place.type = "place"
         place.def = this;
         stage.addChild(place);
 
-        this.graphics = place;
+        this._graphics = place;
     }
 
     add_token() {
-        this.tokens += 1;
+        this._tokens += 1;
     }
 
-    get_tokens(){
-        return this.tokens;
+    get_tokens() {
+        return this._tokens;
     }
 }
 
-class Transition extends Petri {
-    h = 10;
-    w = 90;
-    active = false;
+class Transition extends PetriObject {
+    _h = 10;
+    _w = 90;
+    _active = false;
 
-    constructor(x, y, add = true) {
-        super(x, y, add);
-        this.type = "transition";
+    constructor(x, y, net, add = true) {
+        super(x, y, net, add);
+        this._type = "transition";
     }
 
     make() {
         let transition = new createjs.Shape();
-        transition.graphics.beginFill('black').drawRect(this.x, this.y, this.h, this.w);
+        transition.graphics.beginFill('black').drawRect(this._x, this._y, this._h, this._w);
         transition.type = "transition";
         transition.def = this;
         stage.addChild(transition);
 
-        this.graphics = transition;
+        this._graphics = transition;
+    }
+
+    set_active(active) {
+        this._active = active;
     }
 }
