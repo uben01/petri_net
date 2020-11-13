@@ -74,9 +74,9 @@ let cloned_element_interact = function (evt) {
 };
 
 $(document).ready(function () {
-    var btn = $("#run");
+    var btn = $("#start");
     btn.on('click', function () {
-        step(net);
+        start(net);
     });
 
     // Define toolbars

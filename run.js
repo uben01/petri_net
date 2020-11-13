@@ -1,8 +1,16 @@
-function step(net, depth = 0) {
-    if (depth > 3) return;
+function start(net) {
+    net.set_original();
+    let start_state = net.get_state_model();
+    step(net, 0);
+
+    net.load_state_model(start_state);
+}
+
+function step(net, depth) {
+    if (depth > $("#depth").val()) return;
 
     let tabs = "";
-    for (let i = 0; i < depth; i++){
+    for (let i = 0; i < depth; i++) {
         tabs += "&emsp;"
     }
     log(tabs + "[" + net.get_state_model() + "]");
@@ -34,6 +42,7 @@ function step(net, depth = 0) {
         if (a_transition.get_post().length === 0) {
             a_transition.fire(null);
             step(clone, depth + 1);
+            clone.cleanup();
         } else
             for (let j = 0; j < a_transition.get_post().length; j++) {
                 let c_clone;
@@ -45,6 +54,8 @@ function step(net, depth = 0) {
                 let aa_transition = c_clone.get_element_by_id(a_transition.get_id());
                 aa_transition.fire(j);
                 step(c_clone, depth + 1);
+                c_clone.cleanup();
             }
+        clone.cleanup();
     }
 }

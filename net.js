@@ -1,6 +1,7 @@
 class PetriNet {
     _all_elements = []
     _id_counter = 0;
+    _original = false;
 
     get_all_elements() {
         return this._all_elements;
@@ -14,6 +15,16 @@ class PetriNet {
             }
         }
         return states;
+    }
+
+    load_state_model(model){
+        let j = 0;
+        for (let i = 0; i < this._all_elements.length; i++) {
+            if (this._all_elements[i].get_type() === "place") {
+                this._all_elements[i].set_tokens(model[j]);
+                j += 1;
+            }
+        }
     }
 
     add_element(element) {
@@ -95,6 +106,19 @@ class PetriNet {
 
         return new_net;
     }
+
+    cleanup(){
+        if (this._original) return;
+        for (let i = 0; i < this._all_elements.length; i++){
+            this._all_elements[i].cleanup();
+            delete this._all_elements[i];
+        }
+        this._all_elements = []
+    }
+
+    set_original(){
+        this._original = true;
+    }
 }
 
 class PetriObject {
@@ -107,7 +131,6 @@ class PetriObject {
     _graphics;
     _type;
     _parent;
-    static _id_counter = 0;
 
     constructor(x, y, parent, add) {
         this._x = x;
@@ -165,6 +188,10 @@ class PetriObject {
 
     set_id(id){
         this._id = id;
+    }
+
+    cleanup(){
+        delete this._graphics;
     }
 
     static add_connection(pre, post) {
