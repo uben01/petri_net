@@ -17,7 +17,7 @@ class PetriNet {
         return states;
     }
 
-    load_state_model(model){
+    load_state_model(model) {
         let j = 0;
         for (let i = 0; i < this._all_elements.length; i++) {
             if (this._all_elements[i].get_type() === "place") {
@@ -107,16 +107,16 @@ class PetriNet {
         return new_net;
     }
 
-    cleanup(){
+    cleanup() {
         if (this._original) return;
-        for (let i = 0; i < this._all_elements.length; i++){
+        for (let i = 0; i < this._all_elements.length; i++) {
             this._all_elements[i].cleanup();
             delete this._all_elements[i];
         }
         this._all_elements = []
     }
 
-    set_original(){
+    set_original() {
         this._original = true;
     }
 }
@@ -131,6 +131,8 @@ class PetriObject {
     _graphics;
     _type;
     _parent;
+    _name;
+    _tag;
 
     constructor(x, y, parent, add) {
         this._x = x;
@@ -159,6 +161,13 @@ class PetriObject {
             this._y = y;
             this._graphics.x = x;
             this._graphics.y = y;
+
+            this._tag.x = x - 1;
+            if(this._type === "place") {
+                this._tag.y = y - 1;
+            } else {
+                this._tag.y = y - 1 +60;
+            }
         }
     }
 
@@ -186,12 +195,36 @@ class PetriObject {
         return this._id;
     }
 
-    set_id(id){
+    set_id(id) {
         this._id = id;
     }
 
-    cleanup(){
+    cleanup() {
         delete this._graphics;
+    }
+
+    get_name() {
+        if (this._name == null) {
+            let before = 0
+            for (let i = 0; i < this._parent.get_all_elements().length; i++) {
+                if (this._parent.get_all_elements()[i]._id === this._id) {
+                    if (this._type === "place") {
+                        this._name = String.fromCharCode(65 + before)
+                    } else {
+                        this._name = "t" + before;
+                    }
+                } else {
+                    if (this._parent.get_all_elements()[i].get_type() === this._type) before += 1;
+                }
+            }
+        }
+        return this._name;
+    }
+
+    put_name(x, y, text){
+        let txt = new createjs.Text(text, "18px Arial", "#ff7700");
+        this._tag = txt;
+        stage.addChild(txt);
     }
 
     static add_connection(pre, post) {
@@ -212,10 +245,12 @@ class Place extends PetriObject {
 
     make() {
         let place = new createjs.Shape();
-        place.graphics.setStrokeStyle(2).beginStroke('black').drawCircle(this._x, this._y, this._r);
+        place.graphics.setStrokeStyle(2).beginFill('#F0F0F0').beginStroke('black').drawCircle(this._x, this._y, this._r);
         place.type = "place"
         place.def = this;
         stage.addChild(place);
+
+        this.put_name(this._x - 1, this._y - 1, this.get_name());
 
         this._graphics = place;
     }
@@ -258,6 +293,8 @@ class Transition extends PetriObject {
         transition.def = this;
         stage.addChild(transition);
 
+        this.put_name(this._x , this._y - 1, this.get_name());
+
         this._graphics = transition;
     }
 
@@ -274,6 +311,6 @@ class Transition extends PetriObject {
             for (let i = 0; i < this._pre.length; i++)
                 this._pre[i].lose_token()
 
-        if(n !== null) this._post[n].add_token();
+        if (n !== null) this._post[n].add_token();
     }
 }
