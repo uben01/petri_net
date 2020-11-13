@@ -1,26 +1,62 @@
+let nodeDataArray = []
+let linkDataArray = []
+let index = 0;
+let objects = [];
+
 function start(net) {
     net.set_original();
     let start_state = net.get_state_model();
-    step(net, 0);
+    for (let i = 0; i < net.get_all_elements(); i++) {
+        if (net.get_all_elements()[i].get_type() === types.PLACE) {
+            objects.push(net.get_all_elements()[i].get_name());
+        }
+    }
 
+    step(net, 0, null, -1);
     net.load_state_model(start_state);
+
+    do_visualize(nodeDataArray, linkDataArray);
 }
 
-function step(net, depth) {
+function step(net, depth, trans_fired, parent) {
     if (depth > $("#depth").val()) return;
 
-    let tabs = "";
-    for (let i = 0; i < depth; i++) {
-        tabs += "&emsp;"
+    // check if it is already in object
+    let txt = net.get_pretty_state_model().join(' ');
+    for (let i = 0; i < nodeDataArray.length; i++) {
+        if (nodeDataArray[i].text === txt) {
+            linkDataArray.push({
+                from: parent,
+                to: nodeDataArray[i].key,
+                text: trans_fired.get_name()
+            });
+            return;
+        }
     }
-    log(tabs + "[" + net.get_state_model() + "]");
+
+    // do the stuff
+    index += 1;
+    let i_index = index;
+
+    if (parent !== -1) {
+        linkDataArray.push({
+            from: parent,
+            to: index,
+            text: trans_fired.get_name()
+        });
+    }
+
+    nodeDataArray.push({
+        key: index,
+        text: txt
+    });
 
     let elements = net.get_all_elements();
     let active_transitions = [];
 
     // Activate all transitions
     for (let i = 0; i < elements.length; i++) {
-        if (elements[i].get_type() === "transition") {
+        if (elements[i].get_type() === types.TRANSITION) {
             let active = true;
             for (let j = 0; j < elements[i].get_pre().length; j++) {
                 if (elements[i].get_pre()[j].get_tokens() === 0) active = false;
@@ -30,7 +66,7 @@ function step(net, depth) {
         }
     }
 
-    // create cloned "realities" and fire different transition, to different place in each
+    // create cloned "realities" and fire different transition
     for (let i = 0; i < active_transitions.length; i++) {
         let clone;
         if (i < active_transitions.length - 1)
@@ -39,23 +75,8 @@ function step(net, depth) {
             clone = net;
 
         let a_transition = clone.get_element_by_id(active_transitions[i].get_id());
-        if (a_transition.get_post().length === 0) {
-            a_transition.fire(null);
-            step(clone, depth + 1);
-            clone.cleanup();
-        } else
-            for (let j = 0; j < a_transition.get_post().length; j++) {
-                let c_clone;
-                if (j < a_transition.get_post().length - 1)
-                    c_clone = clone.deep_clone();
-                else
-                    c_clone = clone;
-
-                let aa_transition = c_clone.get_element_by_id(a_transition.get_id());
-                aa_transition.fire(j);
-                step(c_clone, depth + 1);
-                c_clone.cleanup();
-            }
+        a_transition.fire();
+        step(clone, depth + 1, a_transition, i_index);
         clone.cleanup();
     }
 }
