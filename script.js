@@ -74,7 +74,9 @@ let cloned_element_interact = function (evt) {
 };
 
 $(document).ready(function () {
-    var btn = $("#start");
+    visualize_init();
+
+    let btn = $("#start");
     btn.on('click', function () {
         start(net);
     });

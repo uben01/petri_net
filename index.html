@@ -2,9 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Interactive Petri net</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://code.createjs.com/1.0.0/easeljs.min.js"></script>
+    <script src="https://unpkg.com/gojs/release/go.js"></script>
 </head>
 <body>
 <canvas id="myCanvas" width="800" height="800" style="border:1px solid #000000; float: left">
@@ -16,8 +17,12 @@
     <span>Állapot: </span>
     <p id="logger"></p>
 </div>
+<div id="sample">
+    <div id="myDiagramDiv" style="border: solid 1px black; width:400px; height:400px; float: right"></div>
+</div>
 <script src="net.js"></script>
 <script src="script.js"></script>
 <script src="run.js"></script>
+<script src="visualize.js"></script>
 </body>
 </html>
