@@ -276,6 +276,14 @@ class Transition extends PetriObject {
     }
 
     /**
+     * Gets the 'active' property of the Transition
+     * @returns {boolean}
+     */
+    get_active() {
+        return this._active;
+    }
+
+    /**
      * Fires the Transition, making all the predecessors lose a token, and the successors gain one.
      */
     fire() {
@@ -289,7 +297,7 @@ class Transition extends PetriObject {
 }
 
 /**
- * Class for PetriNet object
+ * Class for Petriet object
  * @typedef PetriNet
  */
 class PetriNet {
