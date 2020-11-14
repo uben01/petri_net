@@ -12,7 +12,8 @@ Used libraries:
 ---
 
 TODOs:
- 1. Make failsafe
- 1. Check limits (like: no connections, single place or transtions)
- 1. Clear and reinitialize button
+ 1. ~~Make failsafe~~
+ 1. ~~Check limits (like: no connections, single place or transitions)~~
+ 1. ~~Clear and reinitialize button~~ -- Solved by proper cleanup in the end and at run
+ 1. ~~Add manual~~ 
  1. Place an object need a click and a drag, make it only one 
