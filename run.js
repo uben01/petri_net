@@ -1,18 +1,23 @@
 let nodeDataArray;
 let linkDataArray;
-let index = 0;
-let objects = [];
+let index;
 
+/**
+ * This function starts the chain reaction of the data processing. Nullifying the two arrays needed to pass to the
+ * visualization and the index counter. It saves the starting state, and loading it in the end, so the simulation can
+ * be redone.
+ *
+ * Then calls the step function, with the initial parameters (depth: 0; trans_fired: null; parent: -1)
+ *
+ * In the end, the state load and visualization function is called.
+ * @param {PetriNet} net
+ */
 function start(net) {
     nodeDataArray = []
     linkDataArray = []
+    index = 0;
 
     let start_state = net.get_state_model();
-    for (let i = 0; i < net.get_all_elements(); i++) {
-        if (net.get_all_elements()[i].get_type() === types.PLACE) {
-            objects.push(net.get_all_elements()[i].get_name());
-        }
-    }
 
     step(net, 0, null, -1);
     net.load_state_model(start_state);
@@ -20,11 +25,35 @@ function start(net) {
     do_visualize(nodeDataArray, linkDataArray);
 }
 
-function step(net, depth, trans_fired, parent) {
+/**
+ * The main function of the program.
+ *
+ * First it checks if the recursion depth reached the given number. If so, then stops the event chain for this branch.
+ *
+ * If the state gets through it is registered to nodeDataArray (describing from-to relations). If the current state is
+ * already in the array, the parent gets connected via trans_fired to the given state in linkDataArray. If it's not in
+ * the array, a new connection is made from the parent to the current index via trans_fired. Then the actual state node
+ * is created to nodeDataArray.
+ *
+ * Then all the active transitions are checked, and for every active transition a new state model is created. (Not for
+ * every. The last will go with the current state for memory and process time save.)
+ *
+ * Then in those states, the chosen transition will fire, and recursively call the step function again, with the newly
+ * created state.
+ *
+ * Upon it's return a cleanup is done, so the alternative states won't interrupt the workflow or take unnecessary space
+ * in memory.
+ *
+ * @param {PetriNet} net_state - The inspected PetriNet state
+ * @param {int} depth - The current depth of recursion
+ * @param {Transition} trans_fired - The transition fired, to get to this state
+ * @param {int} parent - The id of the net state, called us
+ */
+function step(net_state, depth, trans_fired, parent) {
     if (depth > $("#depth").val()) return;
 
     // check if it is already in object
-    let txt = net.get_pretty_state_model().join(' ');
+    let txt = net_state.get_pretty_state_model().join(' ');
     for (let i = 0; i < nodeDataArray.length; i++) {
         if (nodeDataArray[i].text === txt) {
             linkDataArray.push({
@@ -36,10 +65,11 @@ function step(net, depth, trans_fired, parent) {
         }
     }
 
-    // do the stuff
+    // saving the current index, for parenting purposes
     index += 1;
     let i_index = index;
 
+    // registering from (parent) to (this) relation via trans_fired
     if (parent !== -1) {
         linkDataArray.push({
             from: parent,
@@ -48,15 +78,16 @@ function step(net, depth, trans_fired, parent) {
         });
     }
 
+    // registering the actual node
     nodeDataArray.push({
         key: index,
         text: txt
     });
 
-    let elements = net.get_all_elements();
+    let elements = net_state.get_all_elements();
     let active_transitions = [];
 
-    // Activate all transitions
+    // De/activate all transitions and save the active ones to a list
     for (let i = 0; i < elements.length; i++) {
         if (elements[i].get_type() === types.TRANSITION) {
             let active = true;
@@ -68,13 +99,13 @@ function step(net, depth, trans_fired, parent) {
         }
     }
 
-    // create cloned "realities" and fire different transition
+    // create cloned state models for every different transition fired
     for (let i = 0; i < active_transitions.length; i++) {
         let clone;
         if (i < active_transitions.length - 1)
-            clone = net.deep_clone();
+            clone = net_state.deep_clone();
         else
-            clone = net;
+            clone = net_state;
 
         let a_transition = clone.get_element_by_id(active_transitions[i].get_id());
         a_transition.fire();

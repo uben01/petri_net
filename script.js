@@ -11,6 +11,12 @@ let log = function (msg) {
     $("#logger").append("<br>" + msg);
 }
 
+/**
+ * This function is called upon a click on a toolbar element. It is cloning the clicked object
+ * and placing it to the stage. After doing so two event handlers are set. One for moving the object (upon pressmove),
+ * one for placing tokens nad making connections (upon click)
+ * @param evt
+ */
 let toolbar_clone = function (evt) {
     let clone;
     if (evt.target.def.get_type() === types.PLACE) {
@@ -24,15 +30,18 @@ let toolbar_clone = function (evt) {
     let graphics = clone.get_graphics()
 
     evt.currentTarget = graphics;
-    evt.target = graphics;
-
     evt.currentTarget.offset = {x: this.x - evt.stageX, y: this.y - evt.stageY};
 
     graphics.on("pressmove", toolbar_clone_interact);
     graphics.on("click", cloned_element_interact);
-
 }
 
+/**
+ * If the lineDraw and token modes are disabled, the function tries to set the object's coordinates to the cursor's.
+ * It might fail, in case of the element is already fixed (being clicked on).
+ * It can only work once, since releasing the mouse button after the movement counts as a click.
+ * @param evt
+ */
 let toolbar_clone_interact = function (evt) {
     if (!lineDraw_mode && !token_mode) {
         evt.currentTarget.def.set_coordinates(evt.stageX + evt.currentTarget.offset.x, evt.stageY + evt.currentTarget.offset.y)
@@ -40,15 +49,31 @@ let toolbar_clone_interact = function (evt) {
     }
 }
 
+/**
+ * This function makes the element fixed (not movable) in any case. It is automatically called after moving the object,
+ * so you have to place it, in the right place, right away.
+ *
+ * If token_mode is activated and the clicked object is a Place, it will gain a token and visualize the new token.
+ *
+ * If the lineDraw_mode is active, on the first element clicked the function will save it. In case of the second element
+ * the types are checked. If they are the same, the user will get an error on the state and nothing will happen, the
+ * first element is still in memory.
+ * In case of different types being connected, a line will be shown between the two spots clicked, and a PetriObject
+ * connection will be made. It means first object will gain a post connection and the second object gains a pre.
+ * After, the first object relation will be nullified, and the connection making can continue.
+ * @param evt
+ */
 let cloned_element_interact = function (evt) {
     evt.currentTarget.def.set_fixed();
     if (token_mode) {
-        evt.currentTarget.def.add_token();
-        let token = new createjs.Shape();
-        token.graphics.beginFill('black').drawCircle(evt.stageX, evt.stageY, 5);
-        stage.addChild(token);
+        if (evt.currentTarget.def.get_type() === types.PLACE) {
+            evt.currentTarget.def.add_token();
+            let token = new createjs.Shape();
+            token.graphics.beginFill('black').drawCircle(evt.stageX, evt.stageY, 5);
+            stage.addChild(token);
 
-        stage.update();
+            stage.update();
+        }
     } else if (lineDraw_mode) {
         if (firstPoint == null) {
             firstPoint = evt.currentTarget;
@@ -78,14 +103,31 @@ let cloned_element_interact = function (evt) {
     }
 };
 
+/**
+ * It is fired, when the document load is finished.
+ *
+ * The 0th step is to initialize the visual effects, making an empty graph painter.
+ *
+ * First, the manual title is made toggleable, then the start button gains it's powers.
+ *
+ * After, the toolbar is defined. The place and transition is made and put in the stage. Then connection and token
+ * toolbars alike.
+ *
+ * The first two gain an event listener, so they can be cloned upon clicked. The other two just activates their modes
+ * and prints it on the logger.
+ *
+ * Last another event listener for key 'Escape'. It will shut down both connection and token modes.
+ *
+ * In the end, stage is updated, to show all the changes we've made!
+ */
 $(document).ready(function () {
     visualize_init();
 
     let manual = $("#manual")
     let manual_title = $("#manual_title")
 
-    manual_title.on('click', function (){
-       manual.slideToggle();
+    manual_title.on('click', function () {
+        manual.slideToggle();
     });
 
     let btn = $("#start");
