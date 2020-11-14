@@ -1,7 +1,7 @@
 ---
 Title - Petri net model and visualization  
 Author - Ütő Bence  
-Data - 2020.09.11.
+Date - 2020.09.14.
 ---
 
 Used libraries: 
