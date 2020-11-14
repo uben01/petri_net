@@ -24,13 +24,11 @@ class PetriObject {
     _parent;
     _name;
     _tag;
-    _toolbar;
 
     constructor(x, y, parent, add) {
         this._x = x;
         this._y = y;
         this._parent = parent;
-        this._toolbar = !add;
         if (add) this._parent.add_element(this);
     }
 
@@ -133,14 +131,6 @@ class PetriObject {
      */
     get_id() {
         return this._id;
-    }
-
-    /**
-     * Returns true if the selected element is toolbar. False else.
-     * @returns {boolean}
-     */
-    get_toolbar(){
-        return this._toolbar;
     }
 
     /**
