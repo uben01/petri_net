@@ -25,6 +25,14 @@ class PetriObject {
     _name;
     _tag;
 
+    /**
+     * Sets the object's coordinates, it's parent net, and in case of {add} is true, it is added to the pooled
+     * PetriObjects
+     * @param {int} x
+     * @param {int} y
+     * @param {PetriNet} parent
+     * @param {boolean} add
+     */
     constructor(x, y, parent, add) {
         this._x = x;
         this._y = y;
@@ -34,8 +42,8 @@ class PetriObject {
 
     /**
      * Creates connection between tow PetriObjects with different type
-     * @param pre
-     * @param post
+     * @param {PetriObject} pre
+     * @param {PetriObject} post
      */
     static add_connection(pre, post) {
         pre._post.push(post)
@@ -58,7 +66,7 @@ class PetriObject {
 
     /**
      * Return with the given graphical representation of the PetriObject
-     * @returns {*}
+     * @returns {createjs.Shape}
      */
     get_graphics() {
         return this._graphics;
@@ -66,8 +74,8 @@ class PetriObject {
 
     /**
      * Sets the PetriObject's coordinate to the given numbers
-     * @param x
-     * @param y
+     * @param {int} x
+     * @param {int} y
      */
     set_coordinates(x, y) {
         if (this._movable) {
@@ -135,7 +143,7 @@ class PetriObject {
 
     /**
      * Sets the id of the PetriObject to a given integer
-     * @param id
+     * @param {int} id
      */
     set_id(id) {
         this._id = id;
@@ -152,7 +160,7 @@ class PetriObject {
 
     /**
      * Generates (first time) and returns with the name of the PetriObject
-     * @returns {*}
+     * @returns {string}
      */
     get_name() {
         if (this._name == null) {
@@ -174,9 +182,9 @@ class PetriObject {
 
     /**
      * Creates a visual representation for the object's name
-     * @param x
-     * @param y
-     * @param text
+     * @param {int} x
+     * @param {int} y
+     * @param {string} text
      */
     put_name(x, y, text) {
         let txt = new createjs.Text(text, "18px Arial", "#ff7700");
@@ -196,6 +204,13 @@ class Place extends PetriObject {
     _r = 20;
     _tokens = 0;
 
+    /**
+     * Propagates all infos to the parent and sets it's type to Place
+     * @param {int} x
+     * @param {int} y
+     * @param {PetriNet} net
+     * @param {boolean} add
+     */
     constructor(x, y, net, add = true) {
         super(x, y, net, add);
         this._type = types.PLACE
@@ -233,7 +248,7 @@ class Place extends PetriObject {
 
     /**
      * Sets the token count to a given number
-     * @param i
+     * @param {int} i
      */
     set_tokens(i) {
         this._tokens = i;
@@ -241,7 +256,7 @@ class Place extends PetriObject {
 
     /**
      * Returns with the token count of the Place
-     * @returns {number}
+     * @returns {int}
      */
     get_tokens() {
         return this._tokens;
@@ -257,6 +272,13 @@ class Transition extends PetriObject {
     _w = 90;
     _active = false;
 
+    /**
+     * Propagates all infos to the parent and sets it's type to Transition
+     * @param {int} x
+     * @param {int} y
+     * @param {PetriNet} net
+     * @param {boolean} add
+     */
     constructor(x, y, net, add = true) {
         super(x, y, net, add);
         this._type = types.TRANSITION;
@@ -276,7 +298,7 @@ class Transition extends PetriObject {
 
     /**
      * Makes Transition active
-     * @param active
+     * @param {boolean} active
      */
     set_active(active) {
         this._active = active;
@@ -304,7 +326,7 @@ class Transition extends PetriObject {
 }
 
 /**
- * Class for Petriet object
+ * Class for PetriNet object
  * @typedef PetriNet
  */
 class PetriNet {
@@ -336,7 +358,7 @@ class PetriNet {
 
     /**
      * Loads previously saved state model
-     * @param model
+     * @param {int[]} model
      */
     load_state_model(model) {
         let j = 0;
@@ -349,16 +371,14 @@ class PetriNet {
     }
 
     /**
-     * Returns with and array of Place names. Every Place is in it that many times that many tokens it has
-     * @returns {Place[]}
+     * Returns with an array of integers. Every integer represents how many tokens a place has.
+     * @returns {int[]}
      */
     get_pretty_state_model() {
         let states = []
         for (let i = 0; i < this._all_elements.length; i++) {
             if (this._all_elements[i].get_type() === types.PLACE) {
-                for (let j = 0; j < this._all_elements[i].get_tokens(); j++) {
-                    states.push(this._all_elements[i].get_name());
-                }
+                states.push(this._all_elements[i].get_tokens());
             }
         }
         return states;
@@ -366,7 +386,7 @@ class PetriNet {
 
     /**
      * Adds an PetriObject to the element list
-     * @param PetriObject
+     * @param {PetriObject} element
      */
     add_element(element) {
         element.set_id(this._id_counter);
