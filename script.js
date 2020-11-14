@@ -38,8 +38,7 @@ let toolbar_clone = function (evt) {
 
 /**
  * If the lineDraw and token modes are disabled, the function tries to set the object's coordinates to the cursor's.
- * It might fail, in case of the element is already fixed (being clicked on).
- * It can only work once, since releasing the mouse button after the movement counts as a click.
+ * It might fail, in case of the element is already fixed (being clicked on by connection or token tool).
  * @param evt
  */
 let toolbar_clone_interact = function (evt) {
@@ -50,8 +49,7 @@ let toolbar_clone_interact = function (evt) {
 }
 
 /**
- * This function makes the element fixed (not movable) in any case. It is automatically called after moving the object,
- * so you have to place it, in the right place, right away.
+ * This function makes the element fixed (not movable) in case of token or connection mode activated.
  *
  * If token_mode is activated and the clicked object is a Place, it will gain a token and visualize the new token.
  *
@@ -61,11 +59,12 @@ let toolbar_clone_interact = function (evt) {
  * In case of different types being connected, a line will be shown between the two spots clicked, and a PetriObject
  * connection will be made. It means first object will gain a post connection and the second object gains a pre.
  * After, the first object relation will be nullified, and the connection making can continue.
+ *
  * @param evt
  */
 let cloned_element_interact = function (evt) {
-    evt.currentTarget.def.set_fixed();
     if (token_mode) {
+        evt.currentTarget.def.set_fixed();
         if (evt.currentTarget.def.get_type() === types.PLACE) {
             evt.currentTarget.def.add_token();
             let token = new createjs.Shape();
@@ -75,6 +74,7 @@ let cloned_element_interact = function (evt) {
             stage.update();
         }
     } else if (lineDraw_mode) {
+        evt.currentTarget.def.set_fixed();
         if (firstPoint == null) {
             firstPoint = evt.currentTarget;
             firstPoint.l_x = evt.stageX;
