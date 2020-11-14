@@ -1,10 +1,12 @@
-let nodeDataArray = []
-let linkDataArray = []
+let nodeDataArray;
+let linkDataArray;
 let index = 0;
 let objects = [];
 
 function start(net) {
-    net.set_original();
+    nodeDataArray = []
+    linkDataArray = []
+
     let start_state = net.get_state_model();
     for (let i = 0; i < net.get_all_elements(); i++) {
         if (net.get_all_elements()[i].get_type() === types.PLACE) {

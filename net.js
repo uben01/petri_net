@@ -14,13 +14,16 @@ const types = {
  */
 class PetriObject {
     _id;
-    _x; _y;
-    _pre = []; _post = [];
+    _x;
+    _y;
+    _pre = [];
+    _post = [];
     _movable = true;
     _graphics;
     _type;
     _parent;
-    _name; _tag;
+    _name;
+    _tag;
 
     constructor(x, y, parent, add) {
         this._x = x;
@@ -75,10 +78,10 @@ class PetriObject {
             this._graphics.y = y;
 
             this._tag.x = x - 1;
-            if(this._type === types.PLACE) {
+            if (this._type === types.PLACE) {
                 this._tag.y = y - 1;
             } else {
-                this._tag.y = y - 1 +60;
+                this._tag.y = y - 1 + 60;
             }
         }
     }
@@ -143,6 +146,8 @@ class PetriObject {
      * Cleans up the PetriObject, in the end of it's lifecycle
      */
     cleanup() {
+        stage.removeChild(this._graphics);
+        stage.removeChild(this._tag);
         delete this._graphics;
     }
 
@@ -174,8 +179,10 @@ class PetriObject {
      * @param y
      * @param text
      */
-    put_name(x, y, text){
+    put_name(x, y, text) {
         let txt = new createjs.Text(text, "18px Arial", "#ff7700");
+        txt.x = x;
+        txt.y = y;
         this._tag = txt;
         stage.addChild(txt);
     }
@@ -202,7 +209,7 @@ class Place extends PetriObject {
         place.def = this;
         stage.addChild(place);
 
-        this.put_name(this._x - 1, this._y - 1, this.get_name());
+        this.put_name(this._x - 30, this._y - 30, this.get_name());
 
         this._graphics = place;
     }
@@ -247,7 +254,8 @@ class Place extends PetriObject {
  * @typedef Transition
  */
 class Transition extends PetriObject {
-    _h = 10; _w = 90;
+    _h = 10;
+    _w = 90;
     _active = false;
 
     constructor(x, y, net, add = true) {
@@ -262,7 +270,7 @@ class Transition extends PetriObject {
         transition.def = this;
         stage.addChild(transition);
 
-        this.put_name(this._x , this._y - 1, this.get_name());
+        this.put_name(this._x - 20, this._y - 10, this.get_name());
 
         this._graphics = transition;
     }
@@ -345,17 +353,18 @@ class PetriNet {
      * Returns with and array of Place names. Every Place is in it that many times that many tokens it has
      * @returns {Place[]}
      */
-    get_pretty_state_model(){
+    get_pretty_state_model() {
         let states = []
         for (let i = 0; i < this._all_elements.length; i++) {
             if (this._all_elements[i].get_type() === types.PLACE) {
-                for (let j = 0; j < this._all_elements[i].get_tokens(); j++){
+                for (let j = 0; j < this._all_elements[i].get_tokens(); j++) {
                     states.push(this._all_elements[i].get_name());
                 }
             }
         }
         return states;
     }
+
     /**
      * Adds an PetriObject to the element list
      * @param PetriObject
@@ -445,7 +454,6 @@ class PetriNet {
                 }
             }
         }
-
         return new_net;
     }
 
@@ -458,7 +466,8 @@ class PetriNet {
             this._all_elements[i].cleanup();
             delete this._all_elements[i];
         }
-        this._all_elements = []
+        this._all_elements = [];
+        delete this;
     }
 
     /**
