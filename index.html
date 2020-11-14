@@ -11,14 +11,38 @@
 <canvas id="myCanvas" width="800" height="800" style="border:1px solid #000000; float: left">
 </canvas>
 <div style="float: left; margin: 10px">
+    <p id="manual_title" style="cursor: pointer">Használata: (kattints az elrejtéshez/megjelenítéshez)<br>
+    <ol id="manual">
+        <li>Kattints a toolbarban a Place-re vagy a Transition-re</li>
+        <li>Miután felengedted az egeret, az elem lemásolódik és utána odébbhúzható</li>
+        <li>Helyezz le annyi elemet, amennyit szeretnél</li>
+        <li>Adj hozzá kapcsolatokat és tokeneket tetszés szerint
+            <ul>
+                <li>Kapcsolat hozzáadásához kattints a nyílra a toolbarban, utána a kapcsolat kiinduló pontjára, majd a
+                    végpontjára
+                </li>
+                <li>Token hozzáadásához kattints a pontra a toolbarban, majd azokra a Place-ekre, ahová tokent szeretnél
+                    rakni
+                </li>
+                <li>A token és vonalrajzolási módokból az 'Esc' billentyűvel léphetsz ki</li>
+            </ul>
+        </li>
+        <li>Állítsd be a vizsgálandó maximális mélységet</li>
+        <li>Kattints az indításra</li>
+        <li>Elemek és kapcsolatok később is lehelyezhetőek, de ki nem törölhetőek! Ha valamit elrontottál frissítsd az
+            oldalt és kezdd előről!
+        </li>
+    </ol>
+    </p>
     <label for="depth"> Mélység: </label>
-    <input id="depth" style="margin: 5px" value="3" /><br>
-    <button id="start" style="margin: 5px">Indítás</button><br>
+    <input id="depth" style="margin: 5px" value="3"/><br>
+    <button id="start" style="margin: 5px">Indítás</button>
+    <br>
     <span>Állapot: </span>
     <p id="logger"></p>
 </div>
 <div id="sample">
-    <div id="myDiagramDiv" style="border: solid 1px black; width:400px; height:400px; float: right"></div>
+    <div id="myDiagramDiv" style="border: solid 1px black; width:500px; height:500px; float: right"></div>
 </div>
 <script src="net.js"></script>
 <script src="script.js"></script>

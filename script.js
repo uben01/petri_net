@@ -1,6 +1,7 @@
 var stage = new createjs.Stage('myCanvas');
 
 var net = new PetriNet();
+net.set_original();
 
 var lineDraw_mode = false;
 var token_mode = false;
@@ -12,20 +13,24 @@ let log = function (msg) {
 
 let toolbar_clone = function (evt) {
     let clone;
-    if (evt.target.def.get_type() === "place") {
+    if (evt.target.def.get_type() === types.PLACE) {
         clone = new Place(evt.target.def.get_x(), evt.target.def.get_y(), net);
     } else {
         clone = new Transition(evt.target.def.get_x(), evt.target.def.get_y(), net);
     }
     clone.make();
+    stage.update();
 
     let graphics = clone.get_graphics()
 
     evt.currentTarget = graphics;
+    evt.target = graphics;
 
     evt.currentTarget.offset = {x: this.x - evt.stageX, y: this.y - evt.stageY};
+
     graphics.on("pressmove", toolbar_clone_interact);
     graphics.on("click", cloned_element_interact);
+
 }
 
 let toolbar_clone_interact = function (evt) {
@@ -76,6 +81,13 @@ let cloned_element_interact = function (evt) {
 $(document).ready(function () {
     visualize_init();
 
+    let manual = $("#manual")
+    let manual_title = $("#manual_title")
+
+    manual_title.on('click', function (){
+       manual.slideToggle();
+    });
+
     let btn = $("#start");
     btn.on('click', function () {
         start(net);
@@ -104,8 +116,8 @@ $(document).ready(function () {
     stage.addChild(token_toolbar);
 
     // Add toolbar event listeners
-    place_toolbar.get_graphics().on("click", toolbar_clone);
-    transition_toolbar.get_graphics().on("click", toolbar_clone);
+    place_toolbar.get_graphics().on("mousedown", toolbar_clone);
+    transition_toolbar.get_graphics().on("mousedown", toolbar_clone);
 
     // Line click - global draw
     connection_toolbar.on("click", function () {
