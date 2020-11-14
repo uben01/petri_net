@@ -61,8 +61,6 @@ function visualize_init(){
                     new go.Binding("text", "text"))
             )
         );
-
-    myDiagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
 }
 
 function do_visualize(nodeDataArray, linkDataArray){
