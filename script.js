@@ -123,15 +123,11 @@ let cloned_element_interact = function (evt) {
 $(document).ready(function () {
     visualize_init();
 
-    let manual = $("#manual")
-    let manual_title = $("#manual_title")
-
-    manual_title.on('click', function () {
-        manual.slideToggle();
+    $("#manual_title").on('click', function () {
+        $("#manual").slideToggle();
     });
 
-    let btn = $("#start");
-    btn.on('click', function () {
+    $("#start").on('click', function () {
         start(net);
     });
 
