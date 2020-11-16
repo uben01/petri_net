@@ -59,7 +59,7 @@ let transition = new createjs.Shape();
 transition.graphics.beginFill('black').drawRect(this._x, this._y, this._h, this._w);
 stage.addChild(transition);
 </pre>
-The functions of CreateJS are pretty self explanatory. `drawRect` means, it will draw
+The functions of CreateJS are pretty self-explanatory. `drawRect` means, it will draw
 a rectangle. The top left corner is in `x,y` and it has the width and height of `w,h`.
 Drawing the connections are very similar.
 <pre>
@@ -77,9 +77,9 @@ stage.addChild(connection);
 As you can see here, the connections are fixed drawings, they cannot be moved easily. 
 That's why the objects cannot be moved after being used. 
 
- - `firstPoint` is containing the object, first clicked. `l_x` and `l_y` are the exact clicking positions.
+ - `firstPoint` contains the object first clicked. `l_x` and `l_y` are the exact clicking positions.
  - `evt.stageX` and `evt.stageY` are normalized coordinates of the clicking. Normalized
-means the range are between 0 and the height of canvas.
+means the range is between 0, and the height of canvas.
  - `stage` again is a global variable containing the one and only stage, that is presented to the user.
 
 CreateJS (EaselJS) documentation can be found at: [https://createjs.com/docs/easeljs/modules/EaselJS.html](https://createjs.com/docs/easeljs/modules/EaselJS.html)
@@ -94,7 +94,7 @@ Out of this 4, only EaselJS is used in this project, but all 4 are included.
 ---
 
 **GoJS** is again something different. I haven't used this lib before, but the API documentation
-is well developed and it provides a handful of sample codes. In the project I've just used the 
+is well-developed, and it provides a handful of sample codes. In the project I've just used the 
 so called 'basic' sample. I've deleted a lot of it, to be as simply as possible. I've only
 added one feature from another sample, so the arrows contain the transition's name.
 
