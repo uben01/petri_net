@@ -114,7 +114,7 @@ printing. The way I have used it:
     - `nodeDataArray` - containing the actual node's (states)
     - `linkDataArray` - containing the transitions between nodes
 
-###Example:
+### Example:
 
 ![Petri net](imgs/1.png) <br> <br>
 ![Reachability model](imgs/2.png)
