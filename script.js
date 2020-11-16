@@ -15,9 +15,14 @@ let log = function (msg) {
  * This function is called upon a click on a toolbar element. It is cloning the clicked object
  * and placing it to the stage. After doing so two event handlers are set. One for moving the object (upon pressmove),
  * one for placing tokens nad making connections (upon click)
+ *
+ * Function is disabled during token or lineDraw modes
+ *
  * @param evt
  */
 let toolbar_clone = function (evt) {
+    if(token_mode || lineDraw_mode) return;
+
     let clone;
     if (evt.target.def.get_type() === types.PLACE) {
         clone = new Place(evt.target.def.get_x(), evt.target.def.get_y(), net);
