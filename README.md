@@ -93,6 +93,87 @@ Out of this 4, only EaselJS is used in this project, but all 4 are included.
 
 ---
 
+**GoJS** is again something different. I haven't used this lib before, but the API documentation
+is well developed and it provides a handful of sample codes. In the project I've just used the 
+so called 'basic' sample. I've deleted a lot of it, to be as simply as possible. I've only
+added one feature from another sample, so the arrows contain the transition's name.
+
+The GoJS lib is used for two function calls. `visualize_init` and `do_visualize`.
+The first one is responsible for the initialization of the environment for the later graph
+printing. The way I have used it:
+ 1. Call initializer
+    - Selecting the corresponding `div` for drawing
+    - Setting the `nodeTemplate`
+        - Location
+        - Shape
+        - Text (which contains the state on the node)
+    - Setting `linkTemplate`
+        - Shape (arrowhead, so it has multiple shapes)
+        - TextPanel (which contains the transition name on the arrow)
+ 1. Call do_visualise every time after 'Run' button is pressed
+    - `nodeDataArray` - containing the actual node's (states)
+    - `linkDataArray` - containing the transitions between nodes
+
+###Example:
+
+![Petri net](imgs/1.png) <br> <br>
+![Reachability model](imgs/2.png)
+
+<pre>
+nodeDataArray = [
+    {
+        "key": 1,
+        "text": "0"
+    },
+    {
+        "key": 2,
+        "text": "1"
+    },
+    {
+        "key": 3,
+        "text": "2"
+    },
+    {
+        "key": 4,
+        "text": "3"
+    }
+];
+</pre>
+<pre>
+linkDataArray = [
+    {
+        "from": 1,
+        "to": 2,
+        "text": "t0"
+    },
+    {
+        "from": 2,
+        "to": 3,
+        "text": "t0"
+    },
+    {
+        "from": 3,
+        "to": 4,
+        "text": "t0"
+    },
+    {
+        "from": 3,
+        "to": 2,
+        "text": "t1"
+    },
+    {
+        "from": 2,
+        "to": 1,
+        "text": "t1"
+    }
+];
+</pre>
+
+Every object contains a `__gohashid` as well, but these are not relevant for us, only the 
+lib uses them.
+
+---
+
 TODOs:
  1. ~~Make failsafe~~
  1. ~~Check limits (like: no connections, single place or transitions)~~
