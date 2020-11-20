@@ -41,7 +41,7 @@ class PetriObject {
     }
 
     /**
-     * Creates connection between tow PetriObjects with different type
+     * Creates connection between two PetriObjects with different type
      * @param {PetriObject} pre
      * @param {PetriObject} post
      */
@@ -316,12 +316,13 @@ class Transition extends PetriObject {
      * Fires the Transition, making all the predecessors lose a token, and the successors gain one.
      */
     fire() {
-        if (this._active)
+        if (this._active) {
             for (let i = 0; i < this._pre.length; i++)
                 this._pre[i].lose_token()
 
-        for (let i = 0; i < this._post.length; i++)
-            this._post[i].add_token();
+            for (let i = 0; i < this._post.length; i++)
+                this._post[i].add_token();
+        }
     }
 }
 
@@ -439,38 +440,9 @@ class PetriNet {
 
             for (let j = 0; j < o.get_pre().length; j++) {
                 let pre = o.get_pre()[j];
-                let contains_pre = false;
+                let pre_e = new_net.get_element_by_id(pre.get_id());
 
-                for (let k = 0; k < c.get_pre().length; k++) {
-                    if (c.get_pre()[k].get_id() === pre.get_id()) {
-                        contains_pre = true;
-                        break;
-                    }
-                }
-                if (!contains_pre) {
-                    let pre_e = new_net.get_element_by_id(pre.get_id());
-                    PetriObject.add_connection(pre_e, c);
-                }
-            }
-        }
-        for (let i = 0; i < net.get_all_elements().length; i++) {
-            let o = net.get_all_elements()[i];
-            let c = new_net.get_all_elements()[i];
-
-            for (let j = 0; j < o.get_post().length; j++) {
-                let post = o.get_post()[j];
-                let contains_post = false;
-
-                for (let k = 0; k < c.get_post().length; k++) {
-                    if (c.get_post()[k].get_id() === post.get_id()) {
-                        contains_post = true;
-                        break;
-                    }
-                }
-                if (!contains_post) {
-                    let post_t = new_net.get_element_by_id(post.get_id());
-                    PetriObject.add_connection(c, post_t);
-                }
+                PetriObject.add_connection(pre_e, c);
             }
         }
         return new_net;
