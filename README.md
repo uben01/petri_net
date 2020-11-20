@@ -181,4 +181,5 @@ TODOs:
  1. ~~Add manual~~ 
  1. ~~Consider making and object movable multiple times~~ -- Until it is connected or token is placed on it
  1. Place an object need a click and a drag, make it only one 
+ 1. Raise exception everywhere it is needed and catch them more responsively
 
