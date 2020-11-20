@@ -92,7 +92,9 @@ function step(net_state, depth, trans_fired, parent) {
         if (elements[i].get_type() === types.TRANSITION) {
             let active = true;
             for (let j = 0; j < elements[i].get_pre().length; j++) {
-                if (elements[i].get_pre()[j].get_tokens() === 0) active = false;
+                let multiplier = elements[i].get_pre().filter(x => x === elements[i].get_pre()[j]).length
+
+                if (elements[i].get_pre()[j].get_tokens() < multiplier) active = false;
             }
             elements[i].set_active(active);
             if (active) active_transitions.push(elements[i]);
